@@ -1,21 +1,13 @@
 @echo off
-chcp 65001 >nul 2>&1
+chcp 949 >nul 2>&1
 setlocal EnableDelayedExpansion
-title Railway CLI - Uninstaller
+title Railway CLI - 제거 (Uninstaller)
 
 REM ============================================================
-REM AUTO-ELEVATE TO ADMINISTRATOR
+REM 관리자 권한이 필요 없습니다 (No administrator needed).
+REM 사용자 폴더와 사용자(User) PATH만 정리하므로 UAC 창을
+REM 띄우지 않습니다.
 REM ============================================================
-net session >nul 2>&1
-if %ERRORLEVEL% NEQ 0 goto :NEED_ELEVATE
-goto :AFTER_ELEVATE
-
-:NEED_ELEVATE
-echo Asking for administrator permission...
-powershell -NoProfile -Command "Start-Process -FilePath '%~f0' -Verb RunAs"
-exit /b 0
-
-:AFTER_ELEVATE
 
 REM ============================================================
 REM DYNAMIC PATH SETUP
@@ -39,21 +31,22 @@ echo ^|            RAILWAY CLI - SAFE COMPLETE REMOVAL           ^|
 echo ^|                                                          ^|
 echo +==========================================================+
 echo.
+echo  이 도구는 Railway CLI를 컴퓨터에서 깨끗이 제거합니다.
 echo  This tool will completely remove Railway CLI from your computer.
 echo.
-echo  Current Windows user:
+echo  현재 윈도우 사용자 (Current user):
 echo    %USERNAME%
 echo.
-echo  It will:
-echo    1. Try to log you out of Railway (if possible).
-echo    2. Remove the npm package @railway/cli (if installed via npm).
-echo    3. Remove the scoop package railway (if installed via scoop).
-echo    4. Remove the cargo binary railwayapp (if installed via cargo).
-echo    5. Delete the binary install folder if it exists.
-echo    6. Clean Railway folder out of your user PATH and system PATH.
-echo    7. Delete Railway configuration folders.
+echo  하는 일 (It will):
+echo    1. Railway 로그아웃 (Log out).
+echo    2. npm 패키지 @railway/cli 제거 (Remove npm package).
+echo    3. scoop 패키지 railway 제거 (Remove scoop package).
+echo    4. cargo 설치 railwayapp 제거 (Remove cargo install).
+echo    5. 바이너리 설치 폴더 삭제 (Delete binary folder).
+echo    6. 사용자 PATH에서 Railway 정리 (Clean user PATH).
+echo    7. Railway 설정 폴더 삭제 (Delete config folders).
 echo.
-echo  Log file:
+echo  기록 파일 (Log file):
 echo    %LOG_FILE%
 echo.
 echo  Scanning now... (press any key to skip the wait)
@@ -113,12 +106,12 @@ if "%FOUND_ANY%"=="0" goto :NOTHING_FOUND
 REM ============================================================
 REM MASTER CONFIRMATION
 REM ============================================================
-echo  Are you SURE you want to remove Railway CLI?
-echo    Type DELETE and press Enter to continue.
-echo    Type anything else to cancel.
+echo  정말 Railway CLI를 지울까요? (Are you SURE?)
+echo    계속하려면 DELETE(대문자) 를 입력하고 Enter.
+echo    Type DELETE to continue.  다른 걸 입력하면 취소됩니다.
 echo.
 set "MASTER_CONFIRM="
-set /p "MASTER_CONFIRM=Confirm: "
+set /p "MASTER_CONFIRM=확인 Confirm: "
 if /i not "!MASTER_CONFIRM!"=="DELETE" goto :USER_CANCEL
 
 echo.
@@ -236,17 +229,15 @@ REM ============================================================
 REM PHASE 5 - CLEAN PATH (user + system)
 REM ============================================================
 echo.
-echo ----- Phase 5 of 6: Clean Railway from PATH -----------------
+echo ----- Phase 5 of 6: 사용자 PATH 정리 (Clean user PATH) ------
 where powershell >nul 2>&1
 if %ERRORLEVEL% NEQ 0 goto :PHASE5_NOPS
 
 call :WRITE_PATHREMOVE_PS1
 if not exist "%TEMP%\railway_pathremove.ps1" goto :PHASE5_NOPSFILE
 
-echo  Cleaning user PATH...
+echo  사용자 PATH에서 Railway 정리 중 (Cleaning user PATH)...
 powershell -NoProfile -ExecutionPolicy Bypass -File "%TEMP%\railway_pathremove.ps1" -RemovePath "%LOCALAPPDATA%\Programs\Railway" -Scope User
-echo  Cleaning system PATH (admin required)...
-powershell -NoProfile -ExecutionPolicy Bypass -File "%TEMP%\railway_pathremove.ps1" -RemovePath "%LOCALAPPDATA%\Programs\Railway" -Scope Machine
 del "%TEMP%\railway_pathremove.ps1" >nul 2>&1
 set "R_PATH=DONE"
 goto :PHASE5_NEXT
@@ -292,32 +283,31 @@ echo  [OK] 'railway' command is no longer on PATH.
 
 :FINAL_END
 echo.
-echo  Removal summary:
-echo    Phase 1  Logout from Railway   : !R_LOGOUT!
-echo    Phase 2  Remove npm package    : !R_NPM!
-echo    Phase 3  Remove scoop package  : !R_SCOOP!
-echo    Phase 4a Remove cargo install  : !R_CARGO!
-echo    Phase 4b Remove binary folder  : !R_BINDIR!
-echo    Phase 5  Clean Railway from PATH: !R_PATH!
-echo    Phase 6  Remove config folders : !R_CFG!
+echo  제거 요약 (Removal summary):
+echo    1  로그아웃 (Logout)            : !R_LOGOUT!
+echo    2  npm 패키지 (npm package)     : !R_NPM!
+echo    3  scoop 패키지 (scoop package) : !R_SCOOP!
+echo    4a cargo 설치 (cargo install)   : !R_CARGO!
+echo    4b 바이너리 폴더 (binary folder): !R_BINDIR!
+echo    5  PATH 정리 (Clean PATH)       : !R_PATH!
+echo    6  설정 폴더 (config folders)   : !R_CFG!
 echo.
 echo +==========================================================+
-echo ^|                                                          ^|
-echo ^|             UNINSTALL COMPLETE                           ^|
-echo ^|                                                          ^|
+echo ^|          제거 완료   UNINSTALL COMPLETE                 ^|
 echo +==========================================================+
 echo.
-echo  Notes:
-echo    - You may need to RESTART any open Command Prompt or PowerShell
-echo      windows for PATH changes to take effect.
-echo    - Project folders may contain a hidden '.railway' subfolder
-echo      that stores the project link. These are NOT removed here.
-echo      To find them yourself, run in any project folder:
-echo          dir /A:D /B .railway
+echo  참고 (Notes):
+echo    - 열려 있던 명령창은 닫았다 다시 여세요 (PATH 반영).
+echo      Restart open windows for PATH changes to take effect.
+echo    - 내 코드 파일과 Railway 서버의 내 앱은 지우지 않습니다.
+echo      Your code files and your apps on Railway are NOT removed.
+echo    - 프로젝트 폴더 안 숨김 '.railway' 연결정보도 그대로 둡니다.
+echo      Hidden '.railway' link folders are NOT removed here.
 echo.
-echo  Log file: %LOG_FILE%
+echo  기록 파일 (Log file): %LOG_FILE%
 echo.
-echo  This window can be closed safely now. Press any key to exit.
+echo  이제 이 창을 닫아도 됩니다. 아무 키나 누르면 종료.
+echo  This window can be closed now. Press any key to exit.
 echo.
 echo Finished: %DATE% %TIME% >> "%LOG_FILE%"
 pause
@@ -325,18 +315,18 @@ exit /b 0
 
 :USER_CANCEL
 echo.
-echo  Cancelled. Nothing was removed.
+echo  취소되었습니다. 아무것도 지우지 않았어요 (Cancelled. Nothing removed).
 echo.
 echo User cancelled at master confirm. >> "%LOG_FILE%"
 pause
 exit /b 0
 
 :NOTHING_FOUND
-echo  [INFO] Nothing was found to remove.
-echo         Railway appears to be already uninstalled, or was never installed
-echo         on this user account.
+echo  [안내] 지울 것이 없습니다 (Nothing to remove).
+echo         Railway가 이미 제거됐거나, 이 계정에 설치된 적이 없어요.
+echo         Already uninstalled, or never installed on this account.
 echo.
-echo  This window will close in 5 seconds. (press any key to close sooner)
+echo  5초 뒤 창이 닫힙니다 (closes in 5 seconds; press any key now).
 echo Nothing found to remove. Exiting cleanly. >> "%LOG_FILE%"
 timeout /t 5 >nul 2>&1
 exit /b 0

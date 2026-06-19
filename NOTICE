@@ -1,0 +1,31 @@
+Railway CLI One-Click Kit
+Copyright 2026 SoDam AI Studio
+
+This product is licensed under the Apache License, Version 2.0.
+See the LICENSE file for the full license text.
+
+------------------------------------------------------------------------
+Third-party tools this kit helps you install / use
+------------------------------------------------------------------------
+
+Railway CLI (@railway/cli)
+  Copyright (c) 2023 Railway Corp.
+  The bundled LICENSE file is the MIT License.
+  (The npm package metadata declares "ISC"; the shipped LICENSE text is MIT.)
+  https://github.com/railwayapp/cli
+
+Node.js
+  A trademark of the OpenJS Foundation
+  https://nodejs.org/
+
+------------------------------------------------------------------------
+Notes
+------------------------------------------------------------------------
+
+This kit is an independent helper. It is NOT affiliated with, endorsed by,
+or sponsored by Railway Corp. or the OpenJS Foundation.
+
+"Railway" is a trademark of Railway Corp.
+
+This kit installs Railway's @railway/cli from the public npm registry.
+Your use of Railway is subject to Railway's terms and pricing.

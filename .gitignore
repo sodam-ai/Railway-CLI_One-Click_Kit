@@ -1,14 +1,22 @@
-# Railway project link folder (created when you run 'railway link')
-.railway/
+# --- Local backups (kept on disk for rollback, never published) ---
+*.bak
+*.bak2
+*.bak3
+_backup_en/
 
-# Log files (saved to %TEMP% by the scripts, but listed here as safety net)
-railway_install.log
-railway_uninstall.log
+# --- Temp / build artifacts ---
+*.tmp
+_t*.html
+_r*.html
 
-# Windows OS files
+# --- Local tooling / plugin config (never publish) ---
+.omc/
+.plugin-config
+.claude/
+.cursor/
+
+# --- OS / editor junk ---
 Thumbs.db
-Desktop.ini
-ehthumbs.db
-
-# macOS
+desktop.ini
 .DS_Store
+*~
