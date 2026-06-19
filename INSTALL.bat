@@ -1,21 +1,14 @@
 @echo off
-chcp 65001 >nul 2>&1
+chcp 949 >nul 2>&1
 setlocal EnableDelayedExpansion
-title Railway CLI - Installer
+title Railway CLI - 설치 (Installer)
 
 REM ============================================================
-REM AUTO-ELEVATE TO ADMINISTRATOR
+REM 관리자 권한이 필요 없습니다 (No administrator needed).
+REM 설치는 모두 현재 사용자 폴더(%APPDATA%\npm 또는 %LOCALAPPDATA%)
+REM 에만 이뤄지고, 사용자(User) PATH만 바꿉니다. 그래서 UAC 창을
+REM 띄우지 않습니다.
 REM ============================================================
-net session >nul 2>&1
-if %ERRORLEVEL% NEQ 0 goto :NEED_ELEVATE
-goto :AFTER_ELEVATE
-
-:NEED_ELEVATE
-echo Asking for administrator permission...
-powershell -NoProfile -Command "Start-Process -FilePath '%~f0' -Verb RunAs"
-exit /b 0
-
-:AFTER_ELEVATE
 
 REM ============================================================
 REM DYNAMIC PATH SETUP
@@ -47,22 +40,20 @@ echo ^|              RAILWAY CLI - ONE CLICK INSTALL             ^|
 echo ^|                                                          ^|
 echo +==========================================================+
 echo.
+echo  이 도구는 Railway CLI를 컴퓨터에 설치합니다.
 echo  This tool will install Railway CLI on your computer.
-echo  Railway lets you deploy apps to the cloud easily.
+echo  (Railway = 내 앱을 인터넷(클라우드)에 올려 실행해 주는 서비스)
 echo.
-echo  Current Windows user:
+echo  현재 윈도우 사용자 (Current user):
 echo    %USERNAME%
 echo.
-echo  Project folder:
+echo  키트 폴더 (This kit folder):
 echo    %SCRIPT_DIR%
 echo.
-echo  Install folder:
-echo    %LOCALAPPDATA%\Programs\Railway
-echo.
-echo  Log file:
+echo  기록 파일 (Log file):
 echo    %LOG_FILE%
 echo.
-echo  Starting now... (press any key to skip the wait)
+echo  잠시 후 시작합니다... (아무 키나 누르면 바로)  Starting now...
 timeout /t 2 >nul 2>&1
 
 REM ============================================================
@@ -416,10 +407,11 @@ echo.
 
 where railway >nul 2>&1
 if %ERRORLEVEL% EQU 0 goto :HAVE_RAILWAY
-echo  [WARN] 'railway' command not found in this window yet.
-echo         This is normal right after install.
-echo         Please OPEN A NEW Command Prompt and try:
-echo             railway --version
+echo  [안내] 아직 이 창에서는 'railway' 명령이 안 보입니다 (정상입니다).
+echo  [WARN] 'railway' not found in THIS window yet (this is normal).
+echo         창을 모두 닫고 '시작하기.bat'을 새로 여세요.
+echo         Please CLOSE this window and open 시작하기.bat again.
+echo         (직접 확인하려면 / to check:  railway --version)
 goto :END_OK
 
 :HAVE_RAILWAY
@@ -438,19 +430,20 @@ echo  [OK] Railway CLI is working in this window!
 echo.
 echo +==========================================================+
 echo ^|                                                          ^|
-echo ^|             INSTALLATION COMPLETE!                       ^|
+echo ^|          설치 완료!  INSTALLATION COMPLETE!              ^|
 echo ^|                                                          ^|
 echo +==========================================================+
 echo.
-echo  What to do next:
-echo    1. Run RUN.bat in this folder to use Railway easily.
-echo    2. Or open a NEW Command Prompt and type:
-echo         railway login
+echo  다음에 할 일 (What to do next):
+echo    1. 이 폴더의 '시작하기.bat'을 실행하면 한국어로 쉽게 사용할 수 있어요.
+echo       Run 시작하기.bat (or RUN.bat) in this folder.
+echo    2. 또는 새 명령창에서 직접 (or type in a new window):  railway login
 echo.
-echo  To remove Railway later, run UNINSTALL.bat.
+echo  나중에 지우려면 UNINSTALL.bat 실행.  To remove later, run UNINSTALL.bat.
 echo.
-echo  Install log: %LOG_FILE%
+echo  기록 파일 (Install log): %LOG_FILE%
 echo.
+echo  이제 이 창을 닫아도 됩니다. 아무 키나 누르면 종료.
 echo  This window can be closed safely now. Press any key to exit.
 echo Install method: %INSTALL_METHOD% >> "%LOG_FILE%"
 echo Final result: SUCCESS >> "%LOG_FILE%"
